@@ -122,7 +122,7 @@ Break cipher encrypted with a single byte xor statistically,
 comparing against the english alphabet frequency.
 Returns the key most likely to decrypt the message.
 */
-func BreakSingleByteXor(cip []byte) int {
+func BreakSingleByteXor(cip []byte) byte {
 	max := 0.0
 	key := 0
 	for i := 0; i < 256; i++ {
@@ -134,5 +134,5 @@ func BreakSingleByteXor(cip []byte) int {
 		}
 	}
 
-	return key
+	return byte(key)
 }

@@ -37,11 +37,43 @@ func main() {
 	var cips [][]byte
 	scanner := bufio.NewScanner(file)
 	// read one line at a time, decode it and encrypt it
+	// find the length of the minimum message
+	trunclen := 1000
 	for scanner.Scan() {
 		msg, _ := base64.StdEncoding.DecodeString(scanner.Text())
+		if len(msg) < trunclen {
+			trunclen = len(msg)
+		}
 		cip := AesCtr(aes, nonce, msg)
 		cips = append(cips, cip)
 	}
 
-	fmt.Println(cips)
+	// truncate att ciphers to the minimum length
+	for i := 0; i < len(cips); i++ {
+		cips[i] = cips[i][:trunclen]
+	}
+
+	// transpose the ciphertexts to create new strings xor:ed with the same key
+	var cipsT [][]byte
+	var newcip []byte
+	for char := 0; char < trunclen; char++ {
+		newcip = nil
+		for c := 0; c < len(cips); c++ {
+			// get character "char" from cipher "c"
+			newcip = append(newcip, cips[c][char])
+		}
+		cipsT = append(cipsT, newcip)
+	}
+
+	keystream := make([]byte, trunclen)
+	for i := 0; i < len(cipsT); i++ {
+		keystream[i] = BreakSingleByteXor(cipsT[i])
+	}
+
+	// decrypt and print the ciphertexts
+	// it won't be perfect, but almost
+	for i := 0; i < len(cips); i++ {
+		plain := RepeatedKeyXor(cips[i], keystream)
+		fmt.Println(string(plain))
+	}
 }
