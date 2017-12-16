@@ -1,6 +1,6 @@
 /*
 Code for breaking AES in CTR mode with fixed nonce using
-manual substitution. Trying bigrams and trigrams etc.
+frequency analysis.
 */
 
 package main
@@ -65,6 +65,7 @@ func main() {
 		cipsT = append(cipsT, newcip)
 	}
 
+	// break each transposed ciphertext using frequency analysis
 	keystream := make([]byte, trunclen)
 	for i := 0; i < len(cipsT); i++ {
 		keystream[i] = BreakSingleByteXor(cipsT[i])
