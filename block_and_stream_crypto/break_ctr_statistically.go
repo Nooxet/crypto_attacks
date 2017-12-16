@@ -1,6 +1,6 @@
 /*
 Code for breaking AES in CTR mode with fixed nonce using
-manual substitution. Trying bigrams and trigrams etc.
+frequency analysis.
 */
 
 package main
